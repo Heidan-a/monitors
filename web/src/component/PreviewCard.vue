@@ -76,8 +76,9 @@ const props = defineProps({
 }
 
 .instance-card{
-    padding: 15px;
-    max-width: 340px;
+    padding: 10px;
+    max-width: 300px;
+    max-height: 300px;
     background-color: var(--el-bg-color);
     border-radius: 5px;
     box-sizing: border-box;
@@ -106,11 +107,11 @@ const props = defineProps({
     }
     .progress{
         font-size: 14px;
-        margin-top: 10px;
+        margin-top: 5px;
     }
     .network-flow{
         font-size: 14px;
-        margin-top: 10px;
+        margin-top: 5px;
         display: flex;
         justify-content: space-between;
     }

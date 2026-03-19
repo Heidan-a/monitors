@@ -60,6 +60,12 @@ public class TerminalWebSocket {
         }
     }
 
+    /**
+     *  获取你在shell中的输入传给主机终端运行
+     * @param session websocket的会话
+     * @param message 传给终端的命令，例如ubuntu的ls等
+     * @throws IOException
+     */
     @OnMessage
     public void onMessage(Session session, String message) throws IOException {
         Shell shell = sessionMap.get(session);
@@ -131,6 +137,9 @@ public class TerminalWebSocket {
             service.submit(this::read);
         }
 
+        /**
+         * 获取主机终端返回的数据，一直循环获取
+         */
         private void read() {
             try {
                 byte[] buffer = new byte[1024 * 1024];

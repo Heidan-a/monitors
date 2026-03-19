@@ -26,7 +26,7 @@ const rules = {
     { required: true, message: '请输入密码', trigger: ['blur', 'change'] },
   ]
 }
-
+//1表示打开ssh连接面板，2表示打开终端面板
 const state = ref(1)
 const formRef = ref()
 

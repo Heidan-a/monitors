@@ -2,7 +2,9 @@ package com.example.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.entity.RestBean;
+import com.example.entity.dto.Account;
 import com.example.entity.dto.Client;
+import com.example.service.AccountService;
 import com.example.service.ClientService;
 import com.example.utils.Const;
 import com.example.utils.JwtUtils;
@@ -32,28 +34,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtUtils utils;
 
     @Resource
-    ClientService clientService;
+    ClientService service;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        DecodedJWT jwt = utils.resolveJwt(authorization);
         String uri = request.getRequestURI();
-        if(uri.startsWith("/monitor")){
-            if(!uri.endsWith("/register")){
-                Client client = clientService.findClientByToken(authorization);
-                if(client == null){
-                    response.setStatus(403);
+        if(uri.startsWith("/monitor")) {
+            if(!uri.endsWith("/register")) {
+                Client client = service.findClientByToken(authorization);
+                if(client == null) {
+                    response.setStatus(401);
                     response.setCharacterEncoding("utf-8");
-                    response.getWriter().write(RestBean.failure(403,"未注册").asJsonString());
+                    response.getWriter().write(RestBean.failure(401, "未注册").asJsonString());
                     return;
-                }else {
-                     request.setAttribute(Const.ATTR_CLIENT,client);
+                } else {
+                    request.setAttribute(Const.ATTR_CLIENT, client);
                 }
             }
-        }else {
+        } else {
+            DecodedJWT jwt = utils.resolveJwt(authorization);
             if(jwt != null) {
                 UserDetails user = utils.toUser(jwt);
                 UsernamePasswordAuthenticationToken authentication =
@@ -62,9 +64,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 request.setAttribute(Const.ATTR_USER_ID, utils.toId(jwt));
                 request.setAttribute(Const.ATTR_USER_ROLE, new ArrayList<>(user.getAuthorities()).get(0).getAuthority());
-                System.out.println(new ArrayList<>(user.getAuthorities()).get(0).getAuthority());
+
+                if(request.getRequestURI().startsWith("/terminal/") && !accessShell(
+                        (int) request.getAttribute(Const.ATTR_USER_ID),
+                        (String) request.getAttribute(Const.ATTR_USER_ROLE),
+                        Integer.parseInt(request.getRequestURI().substring(10)))) {
+                    response.setStatus(401);
+                    response.setCharacterEncoding("utf-8");
+                    response.getWriter().write(RestBean.failure(401, "无权访问").asJsonString());
+                    return;
+                }
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    @Resource
+    AccountService accountService;
+
+    private boolean accessShell(int userId, String userRole, int clientId) {
+        if(Const.ROLE_ADMIN.equals(userRole.substring(5))) {
+            return true;
+        } else {
+            Account account = accountService.getById(userId);
+            return account.getClientList().contains(clientId);
+        }
     }
 }

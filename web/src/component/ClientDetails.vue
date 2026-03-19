@@ -39,7 +39,7 @@ const enableNodeEdit = () => {
     nodeEdit.location = details.base.location
 }
 const submitNodeEdit = () => {
-    post('/api/monitor/rename-node', {
+    post('/api/monitor/node', {
         id: props.id,
         node: nodeEdit.name,
         location: nodeEdit.location

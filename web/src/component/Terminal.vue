@@ -34,6 +34,7 @@ const term = new Terminal({
   // 光标闪烁
   cursorBlink: true,
   cursorStyle: 'underline',
+  //适应高度
   scrollback: 100,
   tabStopWidth: 4,
 });

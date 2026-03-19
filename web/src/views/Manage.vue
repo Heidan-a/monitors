@@ -67,17 +67,15 @@ const terminal = reactive({
 
 <template>
     <div class="manage-main">
-        <div style="display: flex;justify-content: space-between;align-items: end">
+        <div style="display: flex;justify-content: space-between;align-items: end;max-height: 60px">
            <div>
                <div class="title"><i class="fa-solid fa-server"></i> 主机管理列表</div>
                <div class="desc">这里是主机实例管理列表，你可以在这里管理你的主机</div>
            </div>
-            <div>
+            <div class="addNew">
                 <el-button type="primary" :icon="Plus" @click="register.show = true" :disabled="!store.isAdmin">添加新主机</el-button>
             </div>
         </div>
-
-        <el-divider/>
         <div style="margin-bottom: 20px">
             <el-checkbox-group v-model="checkedNodes">
                 <el-checkbox v-for="node in locations" :key="node" :label="node.name" border>
@@ -125,15 +123,20 @@ const terminal = reactive({
 :deep(.el-checkbox-group .el-checkbox){
     margin-right: 10px;
 }
-
+.addNew{
+  margin: 10px;
+}
 .manage-main{
     margin: 0 50px;
 
     .title{
         font-size: 22px;
+        max-height: 20px;
         font-weight: bold;
     }
     .desc{
+        margin: 10px;
+        max-height: 22px;
         font-size: 15px;
         color: grey;
     }

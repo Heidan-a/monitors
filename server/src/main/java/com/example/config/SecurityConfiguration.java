@@ -53,12 +53,12 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(conf -> conf
+                        .requestMatchers("/terminal/**").permitAll()
                         .requestMatchers("/api/auth/**", "/error").permitAll()
                         .requestMatchers("/monitor/**").permitAll()
-                        .requestMatchers("/terminal/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/user/sub/*").hasRole(Const.ROLE_ADMIN)
-                        .anyRequest().hasAnyRole(Const.ROLE_ADMIN,Const.ROLE_NORMAL)
+                        .requestMatchers("/api/user/sub/**").hasRole(Const.ROLE_ADMIN)
+                        .anyRequest().hasAnyRole(Const.ROLE_ADMIN, Const.ROLE_NORMAL)
                 )
                 .formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")
